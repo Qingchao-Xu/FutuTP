@@ -6,7 +6,6 @@ This is the project page of the paper
 
 * Notice: The code will be released after the publishing of this paper.
 
-**Preprint:** Comming soon~
 
 ## Qualitative Results
 
