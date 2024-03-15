@@ -2,7 +2,7 @@
 ## Introduction
 This is the project page of the paper
 
-* "FBP: Future-based Trajectory Prediction for Autonomous Driving"
+* "FutuTP: Future-based Trajectory Prediction for Autonomous Driving"
 
 * Notice: The code will be released after the publishing of this paper.
 
