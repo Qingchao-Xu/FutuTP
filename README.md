@@ -12,9 +12,9 @@ This is the project page of the paper
 * On Argoverse 1 motion forecasting dataset
 
 <p align="center">
-  <img src="files/eval.visualize_1.png" width="280"/>
-  <img src="files/eval.visualize_2.png" width="280"/>
-  <img src="files/eval.visualize_3.png" width="280"/>
+  <img src="files/eval.visualize_1.gif" width="250"/>
+  <img src="files/eval.visualize_2.gif" width="250"/>
+  <img src="files/eval.visualize_3.gif" width="250"/>
 </p>
 
 
