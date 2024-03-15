@@ -1,4 +1,4 @@
-# FBP: Future-based Trajectory Prediction for Autonomous Driving
+# FutuTP: Future-based Trajectory Prediction for Autonomous Driving
 ## Introduction
 This is the project page of the paper
 
