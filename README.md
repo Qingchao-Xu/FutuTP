@@ -49,7 +49,7 @@ pip install torch==2.1.0 torchvision==0.16.0 torchaudio==2.1.0 --index-url https
 ```
 pip install nuscenes-devkit
 ```
-- Download the [nuScenes dataset](https://www.nuscenes.org/download). For this project we just need the following.
+- Download the [nuScenes dataset](https://www.nuscenes.org/download). This project just need the following.
     - Metadata for the Trainval split (v1.0)
     - Map expansion pack (v1.3)
 - Organize the nuScenes root directory as follows
