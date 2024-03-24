@@ -75,49 +75,6 @@ pip install nuscenes-devkit
 pip install -r requirements.txt
 ```
 
-### Train/Evaluate FutuTP using Argoverse 1
-
-#### 1) Train (First Stage)
-Suppose the training data of Argoverse 1 is at ```./train/data/```.
-```bash
-OUTPUT_DIR=checkpoints/argoverse1.fututp.s1; \
-GPU_NUM=4; \
-python src/train.py --do_train --data_dir ./train/data --future_frame_num 30 \
-  --hidden_size 128 --train_all --vector_size 32 --train_batch_size 128 --core_num 32 \
-  --num_train_epochs 9 --subdivide_length 5 --topk 2 --lane_loss_weight 10 --use_map \
-  --use_centerline --distributed_training ${GPU_NUM} --output_dir ${OUTPUT_DIR} \
-  --other_params \
-  semantic_lane direction step_lane_score enhance_global_graph point_level-4-3
-``` 
-
-#### 2) Train (Second Stage)
-```bash
-OUTPUT_DIR=checkpoints/argoverse1.fututp.s2; \
-GPU_NUM=4; \
-MODEL_PATH=checkpoints/argoverse1.fututp.s1/model_save/model.9.bin; \
-python src/train.py --do_train --data_dir ./train/data --future_frame_num 30 \
-  --hidden_size 128 --train_all --vector_size 32 --train_batch_size 128 --core_num 32 \
-  --num_train_epochs 9 --subdivide_length 5 --topk 2 --lane_loss_weight 10 --use_map \
-  --use_centerline --distributed_training ${GPU_NUM} --output_dir ${OUTPUT_DIR} --learning_rate 0.0003 \
-  --other_params \
-  semantic_lane direction step_lane_score enhance_global_graph point_level-4-3 \
-  stage_two stage-two-train_recover=${MODEL_PATH} stage-two-epoch=9
-```
-
-
-#### 3) Evaluate
-Suppose the validation data of Argoverse motion forecasting is at ```./val/data/```.
-```bash
-OUTPUT_DIR=checkpoints/argoverse1.fututp.s2; \
-GPU_NUM=1; \
-python src/eval.py --do_eval --data_dir_for_val ./val/data/ --future_frame_num 30 \
-  --hidden_size 128 --vector_size 32 --eval_batch_size 128 --core_num 16 \
-  --subdivide_length 5 --topk 2 --use_map --use_centerline --model_recover_path 9 \
-  --distributed_training ${GPU_NUM} --output_dir ${OUTPUT_DIR} \
-  --other_params \
-  semantic_lane direction step_lane_score enhance_global_graph point_level-4-3 stage_two
- ```
-
 ### Train/Evaluate FutuTP using nuScenes
 #### 1) Pre-processed data
 ```shell
@@ -164,6 +121,48 @@ python src/eval.py --do_eval --future_frame_num 12 --hidden_size 64 \
   nuscenes nuscenes_mode_num=5 stage_two
 ```
 
+### Train/Evaluate FutuTP using Argoverse 1
+
+#### 1) Train (First Stage)
+Suppose the training data of Argoverse 1 is at ```./train/data/```.
+```bash
+OUTPUT_DIR=checkpoints/argoverse1.fututp.s1; \
+GPU_NUM=4; \
+python src/train.py --do_train --data_dir ./train/data --future_frame_num 30 \
+  --hidden_size 128 --train_all --vector_size 32 --train_batch_size 128 --core_num 32 \
+  --num_train_epochs 9 --subdivide_length 5 --topk 2 --lane_loss_weight 10 --use_map \
+  --use_centerline --distributed_training ${GPU_NUM} --output_dir ${OUTPUT_DIR} \
+  --other_params \
+  semantic_lane direction step_lane_score enhance_global_graph point_level-4-3
+``` 
+
+#### 2) Train (Second Stage)
+```bash
+OUTPUT_DIR=checkpoints/argoverse1.fututp.s2; \
+GPU_NUM=4; \
+MODEL_PATH=checkpoints/argoverse1.fututp.s1/model_save/model.9.bin; \
+python src/train.py --do_train --data_dir ./train/data --future_frame_num 30 \
+  --hidden_size 128 --train_all --vector_size 32 --train_batch_size 128 --core_num 32 \
+  --num_train_epochs 9 --subdivide_length 5 --topk 2 --lane_loss_weight 10 --use_map \
+  --use_centerline --distributed_training ${GPU_NUM} --output_dir ${OUTPUT_DIR} --learning_rate 0.0003 \
+  --other_params \
+  semantic_lane direction step_lane_score enhance_global_graph point_level-4-3 \
+  stage_two stage-two-train_recover=${MODEL_PATH} stage-two-epoch=9
+```
+
+
+#### 3) Evaluate
+Suppose the validation data of Argoverse motion forecasting is at ```./val/data/```.
+```bash
+OUTPUT_DIR=checkpoints/argoverse1.fututp.s2; \
+GPU_NUM=1; \
+python src/eval.py --do_eval --data_dir_for_val ./val/data/ --future_frame_num 30 \
+  --hidden_size 128 --vector_size 32 --eval_batch_size 128 --core_num 16 \
+  --subdivide_length 5 --topk 2 --use_map --use_centerline --model_recover_path 9 \
+  --distributed_training ${GPU_NUM} --output_dir ${OUTPUT_DIR} \
+  --other_params \
+  semantic_lane direction step_lane_score enhance_global_graph point_level-4-3 stage_two
+ ```
 
 ## License
 This repository is licensed under [MIT license](https://github.com/HKUST-Aerial-Robotics/SIMPL/blob/main/LICENSE).
