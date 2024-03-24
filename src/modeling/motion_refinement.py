@@ -1,0 +1,46 @@
+import torch
+import torch.nn as nn
+from modeling.vectornet import *
+
+
+class trajectory_refinement(nn.Module):
+    def __init__(self,args):    
+        super(trajectory_refinement, self).__init__()       
+        self.args = args    
+        self.hidden_size = args.hidden_size
+        self.num_modes = args.mode_num
+        self.MLP = MLP(2, self.hidden_size)
+        self.MLP_2 = MLP(self.hidden_size, self.hidden_size)
+        self.gru = nn.GRU(input_size=self.hidden_size,
+                          hidden_size=self.hidden_size,
+                          num_layers=1,
+                          bias=True,
+                          batch_first=False,
+                          dropout=0,
+                          bidirectional=False)
+        self.loc_delta = nn.Sequential(
+                nn.Linear(self.hidden_size*4, self.hidden_size),
+                nn.LayerNorm(self.hidden_size),
+                nn.ReLU(inplace=True),
+                nn.Linear(self.hidden_size, self.hidden_size),
+                nn.LayerNorm(self.hidden_size),
+                nn.ReLU(inplace=True),
+                nn.Linear(self.hidden_size, 2))
+        
+    def forward(self, stage_one_out, full_traj, global_embed, local_embed):
+        sequence_length = full_traj.shape[2]
+        full_traj_embed = self.MLP(full_traj)
+        full_traj_embed = self.MLP_2(full_traj_embed) + full_traj_embed
+        full_traj_embed = full_traj_embed.view(-1, full_traj.shape[2], self.hidden_size)
+        full_traj_embed = full_traj_embed.permute(1, 0, 2)
+        stage_two_out, _ = self.gru(full_traj_embed) 
+        stage_two_out = stage_two_out.permute(1, 0, 2)
+        stage_two_out_pred = stage_two_out[:, int(sequence_length-self.args.future_frame_num):, :]
+        pi = None
+        global_embed = global_embed.permute(1, 0, 2)
+        local_embed = local_embed.squeeze(0)
+        local_embed = local_embed.expand(self.args.future_frame_num, *local_embed.shape)
+        local_embed = local_embed.permute(1, 0, 2)
+        loc_delta = self.loc_delta(torch.cat((stage_one_out, stage_two_out_pred, global_embed, local_embed), dim=-1))
+        loc_delta = loc_delta.view(self.num_modes, -1, self.args.future_frame_num, 2)
+        return (loc_delta, pi)
